@@ -9,11 +9,16 @@ module ActiveRecord::DatabaseViews
     end
 
     def drop!
-      call_sql!("DROP VIEW IF EXISTS #{name} CASCADE;")
+      call_sql!("DROP #{materialized? ? 'MATERIALIZED' : ''} VIEW IF EXISTS #{name} CASCADE;")
     end
 
     def load!
-      call_sql!("CREATE OR REPLACE VIEW #{name} AS #{sql};")
+      if materialized?
+        call_sql!("DROP MATERIALIZED VIEW IF EXISTS #{name};")
+        call_sql!("CREATE MATERIALIZED VIEW #{name} AS #{sql};")
+      else
+        call_sql!("CREATE OR REPLACE VIEW #{name} AS #{sql};")
+      end
     end
 
     def name
@@ -22,6 +27,10 @@ module ActiveRecord::DatabaseViews
       else
         basename
       end
+    end
+
+    def materialized?
+      sql.starts_with?("-- materialized")
     end
 
     private

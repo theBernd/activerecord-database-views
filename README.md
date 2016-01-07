@@ -24,6 +24,12 @@ Place your SQL that view will be generated from into `db\views` directory (*The 
 SELECT * FROM users ORDER BY users.id DESC
 ```
 
+For materialized views just a SQL comment in the first line
+```sql
+-- materialized
+SELECT * FROM users ORDER BY users.id DESC
+```
+
 Then run console (`console c`) and execute...
 
 ```ruby
@@ -68,8 +74,8 @@ end
 ```ruby
 class ReverseUser < ActiveRecord::Base
   private
-    
-  def self.discriminate_class_for_record(record) 
+
+  def self.discriminate_class_for_record(record)
     User
   end
 end
